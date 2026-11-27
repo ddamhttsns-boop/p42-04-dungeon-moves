@@ -4,18 +4,14 @@
 public static class Actions
 {
     // Шаг на соседнюю клетку: dx и dy — на сколько меняются x и y (например, шаг вправо — dx = 1, dy = 0).
-    //   — в стену пройти нельзя;
-    //   — если на клетке живой монстр, игрок не идёт, а бьёт его;
-    //   — в выход без ключа пройти нельзя;
-    //   — если на клетке лежит предмет, игрок подбирает его;
-    //   — если игрок встал на выход, игра выиграна.
     public static string Move(Game game, int dx, int dy)
     {
         Player player = game.Player;
         int newX = player.X + dx;
         int newY = player.Y + dy;
 
-        if (game.Map.IsWall(player.X, player.Y))
+        // ИСПРАВЛЕНО: проверяем стену по новым координатам (newX, newY)
+        if (game.Map.IsWall(newX, newY))
             return "Там стена.";
 
         Monster monster = game.FindMonsterAt(newX, newY);
@@ -52,15 +48,15 @@ public static class Actions
         return "Вы подобрали: " + loot.Item.Name + ".";
     }
 
-    // Игрок использует предмет из сумки. number — номер предмета, как его видит игрок:
-    // первый предмет в сумке — номер 1, второй — номер 2 и так далее.
-    //   — зелье лечит и исчезает из сумки;
-    //   — оружие игрок берёт в руки; оружие, которое было в руках, возвращается в сумку;
-    //   — ключ использовать нельзя: он сам сработает на выходе.
+    // Игрок использует предмет из сумки.
     public static string UseItem(Game game, int number)
     {
         Player player = game.Player;
-        int index = number;
+        
+        // Если нумерация предметов в игре начинается с 1, а в коллекции с 0, 
+        // возможно, понадобится индекс: int index = number - 1;
+        // Проверьте, как реализован ваш Inventory.Get(index).
+        int index = number - 1; 
 
         Item item = player.Bag.Get(index);
         if (item == null)
